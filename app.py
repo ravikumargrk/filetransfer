@@ -1,4 +1,4 @@
-from flask import Flask, Response
+from flask import Flask, Response, send_file
 from flask_restful import Resource, Api, request
 from waitress import serve
 
@@ -10,9 +10,25 @@ auth = os.environ.get('APPAUTH')
 app = Flask(__name__)
 api = Api(app)
 
+exclude = ['README.md', 'app.py', '.venv', '.git', 'requirements.txt']
+
 class fileTransfer(Resource):
     def get(self):
-        return {'doc': 'this is a test server for academic purposes'}
+        reqAuth = request.headers.get('Authorization')
+        if auth!=reqAuth:
+            return Response('Unauthorised', mimetype='text/csv', status=401)
+        else:
+            path = request.headers.get('filename')
+            if not path:
+                return Response('Authorised', mimetype='text/csv', status=200)
+            else:
+                if os.path.isfile(path):
+                    if path not in exclude:
+                        return send_file(path, as_attachment=True)
+                    else:
+                        Response('Unauthorised File Access', mimetype='text/csv', status=401)
+                else:
+                    return Response('File not found', mimetype='text/csv', status=404)
     
     def post(self):
         reqAuth = request.headers.get('Authorization')
@@ -31,9 +47,7 @@ class fileTransfer(Resource):
             f.write(data)
             f.close()
 
-        # upload to disk
-        fileList = '\n'.join(os.listdir())
-        return Response(fileList, mimetype='text/csv', status=200)
+        return Response('Authorised', mimetype='text/csv', status=200)
 
 
 api.add_resource(fileTransfer, '/')
