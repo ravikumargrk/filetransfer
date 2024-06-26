@@ -3,8 +3,8 @@ from flask_restful import Resource, Api, request
 from waitress import serve
 
 from datetime import datetime
+
 import os
-os.chdir(r'/workspaces/puzzles/webserver/data/')
 auth = os.environ.get('APPAUTH')
 
 app = Flask(__name__)
