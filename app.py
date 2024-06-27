@@ -9,7 +9,7 @@ try:
     os.chdir('storage/')
 except FileNotFoundError:
     os.makedirs('storage')
-    os.chdir('storage')
+    os.chdir('storage/')
 auth = os.environ.get('APPAUTH')
 
 app = Flask(__name__)
@@ -35,7 +35,7 @@ class fileTransfer(Resource):
                     # log activity  
                     dt = datetime.now().isoformat()
                     log(dt+' << '+ path)
-                    return send_file(path, as_attachment=True)
+                    return send_file('storage/'+path, as_attachment=True)
                 else:
                     return Response('File not found', mimetype='text/csv', status=404)
     
