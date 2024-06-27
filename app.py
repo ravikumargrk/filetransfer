@@ -7,10 +7,14 @@ from datetime import datetime
 import os
 try:
     os.chdir('storage/')
+    print('cd storage')
 except FileNotFoundError:
     os.makedirs('storage')
     os.chdir('storage/')
+    print('storage folder created')
+
 auth = os.environ.get('APPAUTH')
+port = os.environ.get('PORT')
 
 app = Flask(__name__)
 api = Api(app)
@@ -19,6 +23,8 @@ def log(text):
     f = open('log.txt', 'a')
     f.write(text+'\n')
     f.close()
+
+print(f'Starting server ...')
 
 class fileTransfer(Resource):
     def get(self):
@@ -69,5 +75,6 @@ class fileTransfer(Resource):
 api.add_resource(fileTransfer, '/')
 
 if __name__ == '__main__':
-    # app.run(debug=True)
-    serve(app, host="0.0.0.0", port=5000)
+    app.run(debug=True, port=port, host="0.0.0.0")
+    print(f'Started server at 0.0.0.0:{port}')
+    # serve(app, host="0.0.0.0", port=port)
