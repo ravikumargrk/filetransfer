@@ -17,7 +17,7 @@ api = Api(app)
 
 def log(text):
     f = open('log.txt', 'a')
-    f.write(text)
+    f.write(text+'\n')
     f.close()
 
 class fileTransfer(Resource):
@@ -61,7 +61,7 @@ class fileTransfer(Resource):
             f.close()
 
         # log activity  
-        log(dt+' \t '+ path)
+        log(dt+' >> '+ path)
 
         return Response('Authorised', mimetype='text/csv', status=200)
 
