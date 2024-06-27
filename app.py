@@ -5,12 +5,12 @@ from waitress import serve
 from datetime import datetime
 
 import os
+os.chdir('storage/')
+
 auth = os.environ.get('APPAUTH')
 
 app = Flask(__name__)
 api = Api(app)
-
-exclude = ['README.md', 'app.py', '.venv', '.git', 'requirements.txt']
 
 class fileTransfer(Resource):
     def get(self):
@@ -24,10 +24,7 @@ class fileTransfer(Resource):
                 return Response(files, mimetype='text/csv', status=200)
             else:
                 if os.path.isfile(path):
-                    if path not in exclude:
-                        return send_file(path, as_attachment=True)
-                    else:
-                        Response('Unauthorised File Access', mimetype='text/csv', status=401)
+                    return send_file(path, as_attachment=True)
                 else:
                     return Response('File not found', mimetype='text/csv', status=404)
     
