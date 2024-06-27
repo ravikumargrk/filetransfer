@@ -20,7 +20,8 @@ class fileTransfer(Resource):
         else:
             path = request.headers.get('filename')
             if not path:
-                return Response('Authorised', mimetype='text/csv', status=200)
+                files = 'Files on disk: \n' + '\n'.join(os.listdir())
+                return Response(files, mimetype='text/csv', status=200)
             else:
                 if os.path.isfile(path):
                     if path not in exclude:
