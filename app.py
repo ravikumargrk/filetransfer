@@ -67,6 +67,6 @@ class fileTransfer(Resource):
 api.add_resource(fileTransfer, '/')
 
 if __name__ == '__main__':
-    app.run(debug=True, port=port, host="0.0.0.0")
+    app.run(port=port, host="0.0.0.0")
     print(f'Started server at 0.0.0.0:{port}')
     # serve(app, host="0.0.0.0", port=port)
