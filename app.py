@@ -13,7 +13,7 @@ app = Flask(__name__)
 api = Api(app)
 
 def log(text):
-    f = open('log.txt', 'a')
+    f = open('storage/log.txt', 'a')
     f.write(text+'\n')
     f.close()
 
@@ -67,6 +67,6 @@ class fileTransfer(Resource):
 api.add_resource(fileTransfer, '/')
 
 if __name__ == '__main__':
-    app.run(port=port, host="0.0.0.0")
+    # app.run(port=port, host="0.0.0.0")
+    serve(app, host="0.0.0.0", port=port)
     print(f'Started server at 0.0.0.0:{port}')
-    # serve(app, host="0.0.0.0", port=port)
