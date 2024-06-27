@@ -5,13 +5,6 @@ from waitress import serve
 from datetime import datetime
 
 import os
-try:
-    os.chdir('storage/')
-    print('cd storage')
-except FileNotFoundError:
-    os.makedirs('storage')
-    os.chdir('storage/')
-    print('storage folder created')
 
 auth = os.environ.get('APPAUTH')
 port = os.environ.get('PORT')
@@ -34,10 +27,10 @@ class fileTransfer(Resource):
         else:
             path = request.headers.get('filename')
             if not path:
-                files = 'Files on disk: \n' + '\n'.join(os.listdir())
+                files = 'Files on disk: \n' + '\n'.join(os.listdir('storage'))
                 return Response(files, mimetype='text/csv', status=200)
             else:
-                if os.path.isfile(path):            
+                if os.path.isfile('storage/'+path):            
                     # log activity  
                     dt = datetime.now().isoformat()
                     log(dt+' << '+ path)
@@ -62,7 +55,7 @@ class fileTransfer(Resource):
             path = dt.replace(':','-')
 
         # write
-        with open(path, 'wb') as f:
+        with open('storage/'+path, 'wb') as f:
             f.write(data)
             f.close()
 
@@ -70,7 +63,6 @@ class fileTransfer(Resource):
         log(dt+' >> '+ path)
 
         return Response('Authorised', mimetype='text/csv', status=200)
-
 
 api.add_resource(fileTransfer, '/')
 
