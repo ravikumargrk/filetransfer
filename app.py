@@ -5,12 +5,20 @@ from waitress import serve
 from datetime import datetime
 
 import os
-os.chdir('storage/')
-
+try:
+    os.chdir('storage/')
+except FileNotFoundError:
+    os.makedirs('storage')
+    os.chdir('storage')
 auth = os.environ.get('APPAUTH')
 
 app = Flask(__name__)
 api = Api(app)
+
+def log(text):
+    f = open('log.txt', 'a')
+    f.write(text)
+    f.close()
 
 class fileTransfer(Resource):
     def get(self):
@@ -23,12 +31,17 @@ class fileTransfer(Resource):
                 files = 'Files on disk: \n' + '\n'.join(os.listdir())
                 return Response(files, mimetype='text/csv', status=200)
             else:
-                if os.path.isfile(path):
+                if os.path.isfile(path):            
+                    # log activity  
+                    dt = datetime.now().isoformat()
+                    log(dt+' << '+ path)
                     return send_file(path, as_attachment=True)
                 else:
                     return Response('File not found', mimetype='text/csv', status=404)
     
     def post(self):
+
+        # validate creds
         reqAuth = request.headers.get('Authorization')
         if auth!=reqAuth:
             return Response('Unauthorised', mimetype='text/csv', status=401)
@@ -37,13 +50,18 @@ class fileTransfer(Resource):
         data = request.get_data()
 
         # write to file
-        dt = datetime.now().isoformat().replace(':','-')
+        dt = datetime.now().isoformat()
         path = request.headers.get('filename')
         if not path:
-            path = dt
+            path = dt.replace(':','-')
+
+        # write
         with open(path, 'wb') as f:
             f.write(data)
             f.close()
+
+        # log activity  
+        log(dt+' \t '+ path)
 
         return Response('Authorised', mimetype='text/csv', status=200)
 
